@@ -94,7 +94,7 @@ namespace Agile_Theme7_part2
     /// </summary>
     public class Task1
     {
-        public static void StartTask1(string[] args)
+        public static void StartTask()
         {
             var usdMorning = new CurrencyRate("USD", 50.00m);
             var morningOrder = new Order { Currency = usdMorning, Amount = 100 };
