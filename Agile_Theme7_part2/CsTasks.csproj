@@ -7,4 +7,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="go.mod" />
+    <None Remove="Task3..go" />
+    <None Remove="Task3.exe" />
+  </ItemGroup>
+
 </Project>
