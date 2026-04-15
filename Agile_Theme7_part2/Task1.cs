@@ -146,7 +146,6 @@ namespace Agile_Theme7_part2
 
             Task1Solution.StartTask1_Solution();
             #endregion
-
         }
 
     }
