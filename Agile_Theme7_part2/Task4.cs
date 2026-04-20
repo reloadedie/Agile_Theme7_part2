@@ -18,7 +18,7 @@ namespace CsTasks
     }
 
     /// <summary>
-    /// 
+    /// Человек
     /// </summary>
     public class Human
     {

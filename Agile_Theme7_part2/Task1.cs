@@ -63,11 +63,13 @@ namespace Agile_Theme7_part2
         /// <param name="code">код валюты</param>
         public static void GetCountByCode(string code)
         {
-            Console.WriteLine($"Существуют {_allInstances.Where(i => i.Code == code).Count()} объекта с кодом {code}");
+            Console.WriteLine($"Существуют {_allInstances
+                .Where(i => i.Code == code).Count()} объекта с кодом {code}");
             for (int i = 0; i < _allInstances.Count; i++)
             {
                 var currency = _allInstances[i];
-                Console.WriteLine($"Обьект с кодом {currency.Code} и курсом {currency.Rate}");
+                Console.WriteLine($"Обьект с кодом {currency.Code} и" +
+                    $" курсом {currency.Rate}");
             }
         }
 
@@ -80,7 +82,8 @@ namespace Agile_Theme7_part2
         {
             foreach (var instance in _allInstances.Where(i => i.Code == code)) // поиск по всем кодам
             {
-                Console.WriteLine($" Обновлен курс валюты у {instance.Code}, новое значение: {newRate}, " +
+                Console.WriteLine($" Обновлен курс валюты у {instance.Code}," +
+                    $" новое значение: {newRate}, " +
                     $"старое было {instance.Rate}, дата изменения: {DateTime.Now}");
                 instance.Rate = newRate;
             }

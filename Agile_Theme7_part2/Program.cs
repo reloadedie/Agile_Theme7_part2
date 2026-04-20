@@ -32,7 +32,7 @@ namespace Agile_Theme7_part2
                 {2, Task2.StartTask},
                 {3, RunTask3Go},
                 {4, Task4.StartTask},
-                {5, },
+                {5, RunTask5Python},
                 {6, Task6.StartTask}
             };
 
@@ -149,7 +149,7 @@ namespace Agile_Theme7_part2
         /// <summary>
         /// Запуск 5 задачи на языке Python
         /// </summary>
-        public static void RunTask3Python()
+        public static void RunTask5Python()
         {
             try
             {
