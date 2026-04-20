@@ -6,9 +6,12 @@ namespace CsTasks
     /// </summary>
     public class Task4
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public static void StartTask()
         {
-
+            Console.WriteLine("Четвертая задача может быть объяснима только в презентации");
         }
 
 

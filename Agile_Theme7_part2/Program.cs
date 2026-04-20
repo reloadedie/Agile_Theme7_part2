@@ -32,7 +32,7 @@ namespace Agile_Theme7_part2
                 {2, Task2.StartTask},
                 {3, RunTask3Go},
                 {4, Task4.StartTask},
-                {5, Task5.StartTask},
+                {5, },
                 {6, Task6.StartTask}
             };
 
@@ -64,6 +64,9 @@ namespace Agile_Theme7_part2
             Console.ResetColor();
         }
 
+        /// <summary>
+        /// Запуск 3 задачи на языке Go
+        /// </summary>
         public static void RunTask3Go()
         {
             try
@@ -141,6 +144,191 @@ namespace Agile_Theme7_part2
                 Console.WriteLine(ex.Message);
                 Console.WriteLine(ex.InnerException);
             }
+        }
+
+        /// <summary>
+        /// Запуск 5 задачи на языке Python
+        /// </summary>
+        public static void RunTask3Python()
+        {
+            try
+            {
+                Console.WriteLine("5. Замена поля-массива объектом (язык Python)");
+
+                Console.OutputEncoding = Encoding.UTF8;
+
+                // Путь к Python скрипту
+                string _python_script_path = Path.GetFullPath(
+                    Path.Combine(
+                        AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\Python Tasks\Task5.py"));
+
+                if (!File.Exists(_python_script_path))
+                {
+                    Console_MessageWithColor($"Python скрипт не найден: {_python_script_path}", ConsoleColor.Red);
+                    return;
+                }
+
+                // Поиск Python interpreter
+                string pythonPath = FindPythonInterpreter();
+
+                if (string.IsNullOrEmpty(pythonPath))
+                {
+                    Console_MessageWithColor("Python интерпретатор не найден. Установите Python или добавьте в PATH", ConsoleColor.Red);
+                    return;
+                }
+
+                Console_MessageWithColor($"Используется Python: {pythonPath}", ConsoleColor.Cyan);
+                Console_MessageWithColor($"Запуск скрипта: {_python_script_path}", ConsoleColor.Cyan);
+
+                var pythonProcess = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = pythonPath,
+                        Arguments = $"\"{_python_script_path}\"",
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        CreateNoWindow = true,
+                        StandardOutputEncoding = Encoding.UTF8,
+                        StandardErrorEncoding = Encoding.UTF8
+                    }
+                };
+
+                StringBuilder _output = new StringBuilder();
+                StringBuilder _errors = new StringBuilder();
+
+                pythonProcess.OutputDataReceived += (sender, e) =>
+                {
+                    if (e.Data != null)
+                    {
+                        _output.AppendLine(e.Data);
+                        Console.WriteLine($"[Python] {e.Data}");
+                    }
+                };
+
+                pythonProcess.ErrorDataReceived += (sender, e) =>
+                {
+                    if (e.Data != null)
+                    {
+                        _errors.AppendLine(e.Data);
+                        Console_MessageWithColor($"[Python Error] {e.Data}", ConsoleColor.Red);
+                    }
+                };
+
+                pythonProcess.Start();
+
+                // Асинхронное чтение (важно, иначе дедлок)
+                pythonProcess.BeginOutputReadLine();
+                pythonProcess.BeginErrorReadLine();
+
+                bool exited = pythonProcess.WaitForExit(30000); 
+
+                if (exited)
+                {
+                    if (pythonProcess.ExitCode == 0)
+                    {
+                        Console_MessageWithColor($"Python программа успешно завершена (код: {pythonProcess.ExitCode})", ConsoleColor.Green);
+                    }
+                    else
+                    {
+                        Console_MessageWithColor($"Python программа завершена с ошибкой (код: {pythonProcess.ExitCode})", ConsoleColor.Yellow);
+                        if (_errors.Length > 0)
+                        {
+                            Console_MessageWithColor($"Ошибки:\n{_errors.ToString()}", ConsoleColor.Red);
+                        }
+                    }
+                }
+                else
+                {
+                    Console_MessageWithColor("Python программа не завершилась вовремя, принудительно закрываем", ConsoleColor.Red);
+                    pythonProcess.Kill();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console_MessageWithColor($"Исключение при запуске Python: {ex.Message}", ConsoleColor.Red);
+                Console_MessageWithColor($"Stack trace: {ex.StackTrace}", ConsoleColor.Red);
+            }
+        }
+
+        /// <summary>
+        /// Поиск установленного Python интерпретатора
+        /// </summary>
+        private static string FindPythonInterpreter()
+        {
+            string[] pythonNames = { "python", "python3", "py" };
+
+            string[] possiblePaths =
+            {
+                @"python",
+                @"python3",
+                @"py",
+                @"C:\Python39\python.exe",
+                @"C:\Python310\python.exe",
+                @"C:\Python311\python.exe",
+                @"C:\Python312\python.exe",
+                @"C:\Users\" + Environment.UserName + @"\AppData\Local\Programs\Python\Python39\python.exe",
+                @"C:\Users\" + Environment.UserName + @"\AppData\Local\Programs\Python\Python310\python.exe",
+                @"C:\Users\" + Environment.UserName + @"\AppData\Local\Programs\Python\Python311\python.exe",
+                @"C:\Users\" + Environment.UserName + @"\AppData\Local\Microsoft\WindowsApps\python.exe"
+            };
+
+            foreach (var pythonName in pythonNames)
+            {
+                try
+                {
+                    var whichProcess = new Process
+                    {
+                        StartInfo = new ProcessStartInfo
+                        {
+                            FileName = "where",
+                            Arguments = pythonName,
+                            UseShellExecute = false,
+                            RedirectStandardOutput = true,
+                            CreateNoWindow = true
+                        }
+                    };
+
+                    whichProcess.Start();
+                    string output = whichProcess.StandardOutput.ReadToEnd();
+                    whichProcess.WaitForExit();
+
+                    if (!string.IsNullOrEmpty(output))
+                    {
+                        string firstPath = output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)[0];
+                        if (File.Exists(firstPath))
+                            return firstPath;
+                    }
+                }
+                catch
+                {
+
+                }
+            }
+
+            foreach (var path in possiblePaths)
+            {
+                try
+                {
+                    if (File.Exists(path))
+                        return path;
+                }
+                catch
+                {
+
+                }
+            }
+
+            string? pythonPath = Environment.GetEnvironmentVariable("PYTHON_HOME");
+            if (!string.IsNullOrEmpty(pythonPath))
+            {
+                string exePath = Path.Combine(pythonPath, "python.exe");
+                if (File.Exists(exePath))
+                    return exePath;
+            }
+
+            return null;
         }
     }
 }             
